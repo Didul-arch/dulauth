@@ -1,0 +1,6 @@
+# Secrets must never reach the repo or the image (PRD §11).
+*.pem
+.env
+
+# Built binary
+/dulauth
