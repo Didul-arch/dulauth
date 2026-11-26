@@ -14,7 +14,7 @@ const bcryptCost int = 12
 func hashPassword(pw string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcryptCost)
 	if errors.Is(err, bcrypt.ErrPasswordTooLong) {
-		return "", fmt.Errorf("password terlalu panjang: %w", err)
+		return "", fmt.Errorf("password too long: %w", err)
 	}
 	if err != nil {
 		return "", err

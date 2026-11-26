@@ -43,7 +43,6 @@ func run(ctx context.Context, getenv func(string) string) error {
 		port = "8080"
 	}
 
-	// http.Server has no timeouts by default; set them to resist slow clients.
 	srv := &http.Server{
 		Addr:              ":" + port,
 		Handler:           newHandler(),
@@ -95,7 +94,7 @@ func runCreateUser(ctx context.Context, args []string, getenv func(string) strin
 
 	fs.Parse(args)
 	if *email == "" {
-		return errors.New("this nigga done emptied the email")
+		return errors.New("--email is required")
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -104,9 +103,14 @@ func runCreateUser(ctx context.Context, args []string, getenv func(string) strin
 	password := scanner.Text()
 
 	// database activity
-	pool, err := pgxpool.New(ctx, getenv("DATABASE_URL"))
+	databaseURL := getenv("DATABASE_URL")
+	if databaseURL == "" {
+		return errors.New("DATABASE_URL is not set")
+	}
+	pool, err := pgxpool.New(ctx, databaseURL)
+
 	if err != nil {
-		return fmt.Errorf("conn fail on create user, got :%w", err)
+		return fmt.Errorf("connect to database: %w", err)
 	}
 	defer pool.Close()
 
